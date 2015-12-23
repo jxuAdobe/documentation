@@ -63,6 +63,10 @@ function parseArgs() {
       describe: 'infer links to github in documentation',
       alias: 'g'
     })
+    .option('u', {
+      describe: 'github url if different from gist.github.com and github.com',
+      alias: 'url'
+    })
   .argv;
 
   var options = {};

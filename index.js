@@ -121,7 +121,7 @@ module.exports = function (indexes, options, callback) {
                     inferMembership(),
                     nest
                   ]
-                }
+                },
                 {
                   optional:
                   [
