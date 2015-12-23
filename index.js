@@ -28,13 +28,15 @@ var sort = require('./lib/sort'),
  * @private
  */
 function pipeline() {
-  var elements = arguments;
+  var elementsM = arguments[0].mandatory;
+  var elementsO = arguments[1].optional;
   return function (comment) {
-    for (var i = 0; comment && i < elements.length; i++) {
-      if (elements[i]) {
-        comment = elements[i](comment);
+    for (var i = 0; comment && i < elementsM.length; i++) {
+      if (elementsM[i]) {
+        comment = elementsM[i](comment);
       }
     }
+    comment = elementsO[0](comment, elementsO[1]);    
     return comment;
   };
 }
@@ -107,15 +109,26 @@ module.exports = function (indexes, options, callback) {
                 return memo.concat(parseFn(file));
               }, [])
               .map(pipeline(
-                inferName(),
-                inferAugments(),
-                inferKind(),
-                inferParams(),
-                inferProperties(),
-                inferReturn(),
-                inferMembership(),
-                nest,
-                options.github && github
+                {
+                  mandatory:
+                  [
+                    inferName(),
+                    inferAugments(),
+                    inferKind(),
+                    inferParams(),
+                    inferProperties(),
+                    inferReturn(),
+                    inferMembership(),
+                    nest
+                  ]
+                }
+                {
+                  optional:
+                  [
+                    options.github && github,
+                    options.github && options.url
+                  ]
+                }
               ))
               .filter(Boolean)
               .sort(sort.bind(undefined, options.order)))));
